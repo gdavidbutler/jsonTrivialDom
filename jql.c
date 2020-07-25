@@ -96,9 +96,6 @@ ds(
 
 struct cx {
   sqlite3 *db;
-  sqlite3_stmt *stB;
-  sqlite3_stmt *stC;
-  sqlite3_stmt *stR;
   sqlite3_stmt *stSs;
   sqlite3_stmt *stSi;
   sqlite3_stmt *stNs;
@@ -126,10 +123,6 @@ cb(
   switch (t) {
 
   case jsonTp_Jb:
-    rc = sqlite3_step(X->stB);
-    sqlite3_reset(X->stB);
-    if (rc != SQLITE_DONE)
-      goto exit;
     if (l && (g + l - 1)->s) {
       if (!(o2 = ds(X->db, X->stNs, X->stNi, g + l - 1)))
         goto exit;
@@ -157,15 +150,9 @@ cb(
     }
     *(X->pth + X->pthN) = sqlite3_last_insert_rowid(X->db);
     ++X->pthN;
-    sqlite3_step(X->stC);
-    sqlite3_reset(X->stC);
     break;
 
   case jsonTp_Js:
-    rc = sqlite3_step(X->stB);
-    sqlite3_reset(X->stB);
-    if (rc != SQLITE_DONE)
-      goto exit;
     if (!(o1 = ds(X->db, X->stSs, X->stSi, v)))
       goto exit;
     if (l && (g + l - 1)->s) {
@@ -184,15 +171,9 @@ cb(
     sqlite3_reset(X->stEi);
     if (rc != SQLITE_DONE)
       goto exit;
-    sqlite3_step(X->stC);
-    sqlite3_reset(X->stC);
     break;
 
   case jsonTp_Jn:
-    rc = sqlite3_step(X->stB);
-    sqlite3_reset(X->stB);
-    if (rc != SQLITE_DONE)
-      goto exit;
     if (l && (g + l - 1)->s) {
       if (!(o2 = ds(X->db, X->stNs, X->stNi, g + l - 1)))
         goto exit;
@@ -209,15 +190,9 @@ cb(
     sqlite3_reset(X->stEi);
     if (rc != SQLITE_DONE)
       goto exit;
-    sqlite3_step(X->stC);
-    sqlite3_reset(X->stC);
     break;
 
   case jsonTp_Jt:
-    rc = sqlite3_step(X->stB);
-    sqlite3_reset(X->stB);
-    if (rc != SQLITE_DONE)
-      goto exit;
     if (l && (g + l - 1)->s) {
       if (!(o2 = ds(X->db, X->stNs, X->stNi, g + l - 1)))
         goto exit;
@@ -234,15 +209,9 @@ cb(
     sqlite3_reset(X->stEi);
     if (rc != SQLITE_DONE)
       goto exit;
-    sqlite3_step(X->stC);
-    sqlite3_reset(X->stC);
     break;
 
   case jsonTp_Jf:
-    rc = sqlite3_step(X->stB);
-    sqlite3_reset(X->stB);
-    if (rc != SQLITE_DONE)
-      goto exit;
     if (l && (g + l - 1)->s) {
       if (!(o2 = ds(X->db, X->stNs, X->stNi, g + l - 1)))
         goto exit;
@@ -259,15 +228,9 @@ cb(
     sqlite3_reset(X->stEi);
     if (rc != SQLITE_DONE)
       goto exit;
-    sqlite3_step(X->stC);
-    sqlite3_reset(X->stC);
     break;
 
   case jsonTp_Ju:
-    rc = sqlite3_step(X->stB);
-    sqlite3_reset(X->stB);
-    if (rc != SQLITE_DONE)
-      goto exit;
     if (l && (g + l - 1)->s) {
       if (!(o2 = ds(X->db, X->stNs, X->stNi, g + l - 1)))
         goto exit;
@@ -284,8 +247,6 @@ cb(
     sqlite3_reset(X->stEi);
     if (rc != SQLITE_DONE)
       goto exit;
-    sqlite3_step(X->stC);
-    sqlite3_reset(X->stC);
     break;
 
   case jsonTp_Je:
@@ -296,8 +257,6 @@ cb(
   }
   return (0);
 exit:
-  sqlite3_step(X->stR);
-  sqlite3_reset(X->stR);
   return (1);
 }
 #undef X
@@ -325,24 +284,12 @@ json2jql(
   } else
     tg = 0;
   cx.db = d;
-  cx.stB = cx.stC = cx.stR = cx.stSs = cx.stSi = cx.stNs = cx.stNi = cx.stEi = 0;
+  cx.stSs = cx.stSi = cx.stNs = cx.stNi = cx.stEi = 0;
   if (!(cx.pth = sqlite3_malloc(sizeof (*cx.pth))))
     goto exit;
   *cx.pth = o;
   cx.pthM = cx.pthN = 1;
   if ((rc = -sqlite3_exec(d, "SAVEPOINT \"json2jql\";", 0,0,0)))
-    goto exit;
-  if ((rc = -sqlite3_prepare_v2(d
-   ,"SAVEPOINT \"json2jqlCb\";"
-   ,-1, &cx.stB, 0)))
-    goto exit;
-  if ((rc = -sqlite3_prepare_v2(d
-   ,"RELEASE \"json2jqlCb\";"
-   ,-1, &cx.stC, 0)))
-    goto exit;
-  if ((rc = -sqlite3_prepare_v2(d
-   ,"ROLLBACK TO \"json2jqlCb\";"
-   ,-1, &cx.stR, 0)))
     goto exit;
   if ((rc = -sqlite3_prepare_v2(d
    ,"SELECT \"i\" FROM \"JqlS\" WHERE \"v\"=?1"
@@ -372,9 +319,6 @@ exit:
   sqlite3_finalize(cx.stNs);
   sqlite3_finalize(cx.stSi);
   sqlite3_finalize(cx.stSs);
-  sqlite3_finalize(cx.stR);
-  sqlite3_finalize(cx.stC);
-  sqlite3_finalize(cx.stB);
   sqlite3_exec(d, "RELEASE \"json2jql\";", 0,0,0);
   sqlite3_free(tg);
   return (rc);
