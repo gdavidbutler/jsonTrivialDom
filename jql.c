@@ -129,7 +129,7 @@ cb(
     } else
       o2 = 0;
     sqlite3_bind_int64(X->stEi, 1, *(X->pth + l));
-    if (!v)
+    if (!v->l)
       sqlite3_bind_int(X->stEi, 2, 4);
     else
       sqlite3_bind_int(X->stEi, 2, 5);
@@ -380,6 +380,8 @@ jql2json(
     unsigned int i;
 
     i = sqlite3_column_int(stE, 0);
+    if (i < liN)
+      n = 1;
     while (i < liN) {
       --liN;
       if (!*(li + liN))
