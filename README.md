@@ -4,8 +4,8 @@ Trivial JSON DOM in SQLite
 ### JSON
 
 My [jsonTrivialCallbackParser](https://github.com/gdavidbutler/jsonTrivialCallbackParser) enables fast and easy JSON document parsing and processing.
-The callback style works well as a driving flow, in other words, when all the support to process an JSON document can be invoked as parsed.
-However, many times, an JSON document is needed to provide support for other flows.
+The callback style works well as a driving flow, in other words, when all the support to process a JSON document can be invoked as parsed.
+However, many times, a JSON document is needed to provide support for other flows.
 In this case, the document must be searchable and/or modifiable.
 
 ### Database.
@@ -21,15 +21,15 @@ The biggest one is it supports small, fast and embeddable databases.
 Find the API in jql.h:
 
 * jqlSchema
-  * Create an JQL schema on a connection, if it is missing
+  * Create a JQL schema on a connection, if it is missing
 * json2jql
-  * Parse an JSON document into an JQL schema rooted at a specified element
+  * Parse a JSON document into a JQL schema rooted at a specified element
 * jql2json
-  * Generate an JSON document from an JQL schema at a specified element
+  * Generate a JSON document from a JQL schema at a specified element
 
 ### Example
 
-* test/main.c: read an JSON document(s) on standard input, adding to an optional SQLite "database", then output JSON document(s) from the "database".
+* test/main.c: read a JSON document(s) on standard input, adding to an optional SQLite "database", then output JSON document(s) from the "database".
 
 ### Building
 
