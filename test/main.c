@@ -61,8 +61,10 @@ main(
   if ((rc = json2jql(db, 0, bf, i, 64)) < 0) {
     fprintf(stderr, "json2jql:%d:%s\n", rc, sqlite3_errmsg(db));
     return (rc);
-  } else if (rc != i)
-    fprintf(stderr, "json2jql:%d!=%d:%s\n", rc, i, sqlite3_errmsg(db));
+  } else if (rc != i) {
+    fprintf(stderr, "json2jql:parse failed %d!=%d\n", rc, i);
+    return (SQLITE_ERROR);
+  }
   if ((rc = sqlite3_exec(db, "COMMIT;", 0,0,0))) {
     fprintf(stderr, "sqlite3_exec:%d:%s\n", rc, sqlite3_errmsg(db));
     return (rc);
