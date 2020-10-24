@@ -16,6 +16,9 @@ The biggest one is the ability to use a standard query language, [SQL](https://e
 Using [SQLite](https://sqlite.org) for a DOM has many advantages.
 The biggest one is it supports small, fast and embeddable databases.
 
+Note: SQLite provides a [JSON](https://www.sqlite.org/json1.html) extension.
+Use it when a database *contains* JSON documents, not when JSON documents *are* the database.
+
 ### JQL
 
 Find the API in jql.h:
