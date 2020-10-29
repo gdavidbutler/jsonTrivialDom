@@ -74,9 +74,10 @@ main(
     fprintf(stderr, "jql2json:%s\n", sqlite3_errmsg(db));
     return (-1);
   }
+  putchar('[');
   fwrite(bf, 1, i, stdout);
-  if (!i || *(bf + i - 1) != '\n')
-    putchar('\n');
+  putchar(']');
+  putchar('\n');
   sqlite3_free(bf);
   sqlite3_close(db);
   return (0);
