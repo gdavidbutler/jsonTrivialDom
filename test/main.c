@@ -27,6 +27,7 @@ main(
 ){
   static const char *dn = ":memory:";
   sqlite3 *db;
+  sqlite3_stmt *st;
   unsigned char *bf;
   int rc;
   int i;
@@ -70,15 +71,22 @@ main(
     return (rc);
   }
   sqlite3_free(bf);
-  if (!(bf = (unsigned char *)jql2json(db, 0, (unsigned int *)&i))) {
-    fprintf(stderr, "jql2json:%s\n", sqlite3_errmsg(db));
-    return (-1);
+  if ((rc = -sqlite3_prepare_v2(db
+   ,"SELECT \"i\" FROM \"JqlE\" WHERE \"e\"=0 ORDER BY \"o\" ASC"
+   ,-1, &st, 0))) {
+    fprintf(stderr, "sqlite3_prepare_v2:%d:%s\n", rc, sqlite3_errmsg(db));
+    return (rc);
   }
-  putchar('[');
-  fwrite(bf, 1, i, stdout);
-  putchar(']');
-  putchar('\n');
-  sqlite3_free(bf);
+  while (sqlite3_step(st) == SQLITE_ROW) {
+    if (!(bf = (unsigned char *)jql2json(db, sqlite3_column_int64(st, 0), (unsigned int *)&i))) {
+      fprintf(stderr, "jql2json:%s\n", sqlite3_errmsg(db));
+      return (-1);
+    }
+    fwrite(bf, 1, i, stdout);
+    putchar('\n');
+    sqlite3_free(bf);
+  }
+  sqlite3_finalize(st);
   sqlite3_close(db);
   return (0);
 }
