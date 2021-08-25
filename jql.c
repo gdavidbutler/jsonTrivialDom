@@ -35,6 +35,44 @@ jqlSchema(
   return (rc);
 }
 
+int
+jqlTruncate(
+  sqlite3 *d
+){
+  int fk;
+  int tr;
+  int ch;
+  int rc;
+
+  fk = tr = 0;
+  ch = 1;
+  if ((rc = sqlite3_db_config(d, SQLITE_DBCONFIG_ENABLE_FKEY, -1, &fk)))
+    goto exit;
+  if ((rc = sqlite3_db_config(d, SQLITE_DBCONFIG_ENABLE_TRIGGER, -1, &tr)))
+    goto exit;
+  if (!ch && (rc = sqlite3_exec(d, "PRAGMA ignore_check_constraints=1;", 0,0,0)))
+    goto exit;
+  if (fk && (rc = sqlite3_db_config(d, SQLITE_DBCONFIG_ENABLE_FKEY, 0, 0)))
+    goto exit;
+  if (tr && (rc = sqlite3_db_config(d, SQLITE_DBCONFIG_ENABLE_TRIGGER, 0, 0)))
+    goto exit;
+  rc = sqlite3_exec(d
+   ,"SAVEPOINT \"jqlTruncate\";"
+    "DELETE FROM \"JqlS\";"
+    "DELETE FROM \"JqlN\";"
+    "DELETE FROM \"JqlE\";"
+   , 0,0,0);
+exit:
+  sqlite3_exec(d, "RELEASE \"jqlTruncate\";", 0,0,0);
+  if (tr)
+    sqlite3_db_config(d, SQLITE_DBCONFIG_ENABLE_TRIGGER, tr, 0);
+  if (fk)
+    sqlite3_db_config(d, SQLITE_DBCONFIG_ENABLE_FKEY, fk, 0);
+  if (!ch)
+    sqlite3_exec(d, "PRAGMA ignore_check_constraints=0;", 0,0,0);
+  return (rc);
+}
+
 static sqlite3_int64
 si(
   sqlite3 *d

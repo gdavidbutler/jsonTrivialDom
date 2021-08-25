@@ -16,9 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* create an JQL schema in con: tables XqlT, XqlC, XqlE and XqlA */
+/* create an JQL schema in con: tables JqlS, JqlN, and JqlE */
 /* return sqlite3_exec() result code */
 int jqlSchema(
+  sqlite3 *con
+);
+
+/* truncate tables JqlS, JqlN and JqlE */
+/* return sqlite3 result code */
+int jqlTruncate(
   sqlite3 *con
 );
 
