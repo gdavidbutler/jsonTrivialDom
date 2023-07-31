@@ -15,10 +15,10 @@ jql.str: str.sed jql.sql
 	sed -f str.sed <jql.sql >jql.str
 
 jql.o: jql.c jql.h jql.str
-	cc $(CFLAGS) -c jql.c
+	$(CC) $(CFLAGS) -c jql.c
 
 main: test/main.c jql.o
-	cc $(CFLAGS) -o main test/main.c jql.o $(JSON_OBJ) $(SQLITE_LIB)
+	$(CC) $(CFLAGS) -o main test/main.c jql.o $(JSON_OBJ) $(SQLITE_LIB)
 
 check: main
 	echo '["a",{"":"b","c":"d"},"1",["e","2",["f","3"],"4",["f","5"],"6",["g"],"7"],"8"]' | ./main
