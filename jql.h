@@ -18,6 +18,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __JQL_H__
+#define __JQL_H__
+
 /* create an JQL schema in con: tables JqlS, JqlN, and JqlE */
 /* return sqlite3_exec() result code */
 int jqlSchema(
@@ -49,3 +52,5 @@ char *jql2json(
  ,sqlite3_int64 element
  ,unsigned int *len
 );
+
+#endif /* __JQL_H__ */
